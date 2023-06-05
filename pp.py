@@ -118,10 +118,10 @@ class PointProcessGPFA(nn.Module):
         
         Sigma_inv = torch.multiply(2, S) + torch.linalg.inv(K)
         mu = torch.matmul(torch.linalg.inv(Sigma_inv), torch.matmul(torch.t(W1), torch.subtract(y, b)))
-        term1 = -1*0.5 * torch.slogdet(Sigma_inv)[1]
+        term1 = 0.5 * torch.slogdet(Sigma_inv)[1]
         term2 = 0.5*torch.chain_matmul(torch.unsqueeze(mu, 0), Sigma_inv, torch.unsqueeze(mu, 1))[0, 0]
         
-        term3 = 0.5*torch.slogdet(K)[1]
+        term3 = -1*0.5*torch.slogdet(K)[1]
 
         log_likelihood = term1 + term2 - term3
         

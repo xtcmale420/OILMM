@@ -11,7 +11,7 @@ def train_loop(y, model, loss):
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
     optimizer.zero_grad()
 
-    for i in range(5):
+    for i in range(10):
         optimizer.zero_grad()
         l = -1*loss(y)
         print('l:%f' % l)
@@ -67,10 +67,12 @@ def Cross_Validation_pp(y):
             log_likelihood += likelihood
             
         log_likelihood = torch.div(log_likelihood, 10) 
-        if log_likelihood <= marginal_log_likelihood:
+        if log_likelihood >= marginal_log_likelihood:
             marginal_log_likelihood = log_likelihood
             dimension = i
             
+        print('Final result is %f' % log_likelihood)
+        print('The current test dimension is %f' % i)   
         print('The most possible latent dimension is %f' % dimension)
         
 def Cross_Validation_iomm(y):
@@ -79,7 +81,7 @@ def Cross_Validation_iomm(y):
     dimension = 0
         
     # Check each possible latent dimension
-    for i in range(3, y.shape[1]):
+    for i in range(1, y.shape[1]):
         
         # Divid the data
         sk = KFold(10)
@@ -113,9 +115,10 @@ def Cross_Validation_iomm(y):
             log_likelihood += likelihood
             
         log_likelihood = torch.div(log_likelihood, 10) 
-        if log_likelihood <= marginal_log_likelihood:
+        if log_likelihood >= marginal_log_likelihood:
             marginal_log_likelihood = log_likelihood
             dimension = i
-            
+        print('Final result is %f' % log_likelihood)
+        print('The current test dimension is %f' % i)   
         print('The most possible latent dimension is %f' % dimension)
         
