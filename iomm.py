@@ -3,6 +3,7 @@ import numpy as np
 import scipy
 import torch
 import torch.nn as nn
+
 from torch.distributions.multivariate_normal import MultivariateNormal
 from base import enforce_type 
 
@@ -33,6 +34,10 @@ class OrthogonalMixingModel(nn.Module):
             logD = enforce_type(logD, torch.Tensor)
         self.base_models = nn.ModuleList(base_models)
         self.U = nn.Parameter(U)
+        # self.logS = mnn.Parameter(logS)
+        # self.logD = mnn.Parameter(logD)
+        # self.sigma_sq = mnn.Parameter(sigma_sq)
+
         self.logS = nn.Parameter(logS)
         self.sigma_sq = nn.Parameter(sigma_sq)
         self.logD = nn.Parameter(logD)
@@ -57,16 +62,21 @@ class OrthogonalMixingModel(nn.Module):
     def OrthogonalMixingLikelihood(self, Y):
 
         # Form the summary statistics
-        H = torch.matmul(self.U, torch.diag(torch.pow(torch.exp(self.logS), -1)))
-        yproj = torch.matmul(Y, H)
+        H = torch.matmul(torch.diag(torch.pow(torch.exp(self.logS), -1)), self.U.T)
+        yproj = torch.batch_matmul(Y.unsqeeze(-1), H.unsqueeze(0)).squeeze()
 
         # Observation noise
         Sigma_T = self.sigma_sq * torch.pow(torch.exp(self.logS), -1) + torch.exp(self.logD) 
 
         # Log marginal likelihoods of the individual base problems
+
         lml = torch.cat([base_model.marginal_likelihood(yproj) for base_model in self.base_models])
+        pdb.set_trace()
         lml = torch.sum(lml)
     
+        # Need to factor in the observational noise
+
+
         # Keeping notation from OLMM paper, m is the number of latent processes
         n = Y.shape[0]
         p = self.U.shape[0]

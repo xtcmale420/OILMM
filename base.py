@@ -74,7 +74,9 @@ class BaseGP(nn.Module):
             self.kernel = kernel
 
     def get_cov_matrix(self, T):
-        return torch.cat([torch.unsqueeze(torch.tensor([self.kernel(i, j) for j in range(T)]), 0) for i in range(T)], dim=0)
+        return torch.stack([torch.stack([self.kernel(i, j) 
+                                        for j in range(T)]) 
+                            for i in range(T)])
 
     # Marginal likelihood for a Gaussian process with the given kernel
     def marginal_likelihood(self, y):
@@ -88,3 +90,4 @@ class BaseGP(nn.Module):
         # Return 1 sample from a multidimensional distribution
         sample = MultivariateNormal(torch.zeros(n_s), K).sample()
         return sample
+    

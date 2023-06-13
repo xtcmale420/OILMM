@@ -4,17 +4,20 @@ from base import BaseGP, CosineKernel, enforce_type
 from pp import PointProcessGPFA
 from iomm import OrthogonalMixingModel
 
+from torch import optim
+
+import pdb
+
 # Example structure of a training loop within pytorch
 def train_loop(y, model, loss):
     
     # Training process
-    optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
-    optimizer.zero_grad()
-
+    optimizer = optim.SGD(model.parameters(), lr=1e-3)
+    
     for i in range(10):
         optimizer.zero_grad()
         l = -1*loss(y)
-        print('l:%f' % l)
+        # print('l:%f' % l)
         # This takes the calculate value, and automatically calculates gradients with respect to parameters
         l.backward(retain_graph=True)
         # Optimizer will take the gradients, and then update parameters accordingly
@@ -22,8 +25,8 @@ def train_loop(y, model, loss):
         # Calculate new loss given the parameter update
         l1 = -1*loss(y).detach()
         delta_loss = torch.abs(l1 - l)
-        print('l1:%f' % l1)
-    
+        print('delta_loss:%f' % delta_loss.detach().numpy())
+
     parameters = [param for param in model.parameters()]
     return parameters
             
