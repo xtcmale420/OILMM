@@ -37,7 +37,7 @@ def Cross_Validation_pp(y):
     dimension = 0
     
     # Check each possible latent dimension
-    for i in range(1, y.shape[1]):
+    for i in range(1, 5):
         
         # Divid the data
         sk = KFold(10)
@@ -84,7 +84,7 @@ def Cross_Validation_iomm(y):
     dimension = 0
         
     # Check each possible latent dimension
-    for i in range(1, y.shape[1]):
+    for i in range(1, 5):
         
         # Divid the data
         sk = KFold(10)
